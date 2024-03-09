@@ -4,6 +4,7 @@ import com.example.vkproductapp.BuildConfig
 import com.example.vkproductapp.data.service.ProductService
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 val netWorkModule = module {
     includes(okHttpClient, gsonConverter)
@@ -12,7 +13,7 @@ val netWorkModule = module {
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(get())
-            .addConverterFactory(get())
+            .addConverterFactory(get<GsonConverterFactory>())
             .build()
     }
 }
