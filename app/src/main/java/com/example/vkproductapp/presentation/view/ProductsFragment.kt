@@ -16,6 +16,7 @@ import com.example.vkproductapp.R
 import com.example.vkproductapp.data.model.Product
 import com.example.vkproductapp.presentation.common.Result
 import com.example.vkproductapp.presentation.viewmodel.ProductsViewModel
+import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -63,6 +64,7 @@ class ProductsFragment : Fragment() {
 
                 is Result.NoInternetConnection ->{
                     progressBar?.visibility = View.GONE
+                    Snackbar.make(requireView(), "No Internet connection", Snackbar.LENGTH_LONG).show()
                 }
 
                 is Result.Success ->{
