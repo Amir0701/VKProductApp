@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,6 +23,7 @@ class ProductsFragment : Fragment() {
     private val productsViewModel by viewModel<ProductsViewModel>()
     private var recyclerView: RecyclerView? = null
     private val productRecyclerAdapter = ProductRecyclerAdapter()
+    private var progressBar: ProgressBar? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,6 +42,7 @@ class ProductsFragment : Fragment() {
 
     private fun initViews(view: View){
         recyclerView = view.findViewById(R.id.productsRecyclerView)
+        progressBar = view.findViewById(R.id.productProgressBar)
     }
 
     private fun setUpRecyclerView(){
@@ -55,14 +58,15 @@ class ProductsFragment : Fragment() {
         productsViewModel.productsLiveData.observe(viewLifecycleOwner) {responseResult->
             when(responseResult){
                 is Result.Loading ->{
-
+                    progressBar?.visibility = View.VISIBLE
                 }
 
                 is Result.NoInternetConnection ->{
-
+                    progressBar?.visibility = View.GONE
                 }
 
                 is Result.Success ->{
+                    progressBar?.visibility = View.GONE
                     responseResult.data?.let {data->
                         productRecyclerAdapter.products = data.products
                         productRecyclerAdapter.notifyDataSetChanged()
@@ -70,7 +74,7 @@ class ProductsFragment : Fragment() {
                 }
 
                 is Result.Error ->{
-
+                    progressBar?.visibility = View.GONE
                 }
             }
         }
