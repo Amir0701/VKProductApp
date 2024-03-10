@@ -1,5 +1,6 @@
 package com.example.vkproductapp.presentation.view
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -77,6 +78,11 @@ class ProductsFragment : Fragment() {
 
                 is Result.Error ->{
                     progressBar?.visibility = View.GONE
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Error")
+                        .setMessage(responseResult.message)
+                        .create()
+                        .show()
                 }
             }
         }
