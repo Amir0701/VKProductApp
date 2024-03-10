@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vkproductapp.R
 import com.example.vkproductapp.data.model.Product
+import com.example.vkproductapp.presentation.common.Result
 import com.example.vkproductapp.presentation.viewmodel.ProductsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -51,10 +52,27 @@ class ProductsFragment : Fragment() {
         }
     }
     private fun observeOnProducts(){
-        productsViewModel.productsLiveData.observe(viewLifecycleOwner) {responseData->
-            Log.i("size",responseData.products.size.toString())
-            productRecyclerAdapter.products = responseData.products
-            productRecyclerAdapter.notifyDataSetChanged()
+        productsViewModel.productsLiveData.observe(viewLifecycleOwner) {responseResult->
+            when(responseResult){
+                is Result.Loading ->{
+
+                }
+
+                is Result.NoInternetConnection ->{
+
+                }
+
+                is Result.Success ->{
+                    responseResult.data?.let {data->
+                        productRecyclerAdapter.products = data.products
+                        productRecyclerAdapter.notifyDataSetChanged()
+                    }
+                }
+
+                is Result.Error ->{
+
+                }
+            }
         }
     }
 }

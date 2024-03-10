@@ -7,32 +7,37 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vkproductapp.data.model.ResponseData
 import com.example.vkproductapp.domain.repository.ProductRepository
+import com.example.vkproductapp.util.InternetConnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.lang.Exception
-
-class ProductsViewModel(private val productRepository: ProductRepository): ViewModel() {
-    private val _productsLiveData = MutableLiveData<ResponseData>()
-    val productsLiveData: LiveData<ResponseData> = _productsLiveData
+import com.example.vkproductapp.presentation.common.Result
+class ProductsViewModel(
+    private val productRepository: ProductRepository,
+    private val internetConnection: InternetConnection): ViewModel() {
+    private val _productsLiveData = MutableLiveData<Result<ResponseData>>()
+    val productsLiveData: LiveData<Result<ResponseData>> = _productsLiveData
 
     fun getProducts() = viewModelScope.launch(Dispatchers.IO) {
-        val response = productRepository.getProducts()
-        try {
-            val responseData = processResponse(response)
-            responseData?.let {
-                _productsLiveData.postValue(it)
-            }
-        }catch (e: Exception){
-            Log.e("TAG", e.message.toString())
+        if(internetConnection.hasInternetConnection()){
+            _productsLiveData.postValue(Result.Loading())
+            val response = productRepository.getProducts()
+            val responseResult = processResponse(response)
+            _productsLiveData.postValue(responseResult)
+        }
+        else{
+            _productsLiveData.postValue(Result.NoInternetConnection())
         }
     }
 
-    private fun processResponse(response: Response<ResponseData>): ResponseData? {
+    private fun processResponse(response: Response<ResponseData>): Result<ResponseData> {
         if(response.isSuccessful){
-            return response.body()
+            response.body()?.let { data->
+                return Result.Success(data)
+            }
         }
 
-        throw Exception()
+        return Result.Error(response.message())
     }
 }
