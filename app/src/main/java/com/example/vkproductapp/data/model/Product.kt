@@ -1,5 +1,7 @@
 package com.example.vkproductapp.data.model
 
+import java.io.Serializable
+
 data class Product (
     val id: Long,
     val title: String,
@@ -12,4 +14,4 @@ data class Product (
     val category: String,
     val thumbnail: String,
     val images: List<String>
-)
+): Serializable
