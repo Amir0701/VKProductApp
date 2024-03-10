@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.vkproductapp.R
 import com.example.vkproductapp.data.model.Product
+import com.google.android.material.card.MaterialCardView
 
 class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.ProductViewHolder>() {
     var products: List<Product> = emptyList()
@@ -17,7 +18,7 @@ class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.Produc
         private val productImageView: ImageView = itemView.findViewById(R.id.cardProductImage)
         private val productTitle: TextView = itemView.findViewById(R.id.cardProductTitle)
         private val productDescription: TextView = itemView.findViewById(R.id.cardProductDescription)
-
+        val productCard: MaterialCardView = itemView.findViewById(R.id.cardProduct)
         fun bind(product: Product){
             Glide.with(productImageView)
                 .load(product.thumbnail)
@@ -40,5 +41,14 @@ class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.Produc
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val currentProduct = products[position]
         holder.bind(currentProduct)
+        holder.productCard.setOnClickListener {
+            onItemClickListener?.invoke(currentProduct)
+        }
+    }
+
+    private var onItemClickListener: ((Product) -> Unit)? = null
+
+    fun setOnItemClickListener(clickListener: ((Product) -> Unit)){
+        onItemClickListener = clickListener
     }
 }
