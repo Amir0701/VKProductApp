@@ -7,10 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vkproductapp.R
+import com.example.vkproductapp.data.model.Product
 import com.example.vkproductapp.presentation.viewmodel.ProductsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -42,6 +44,11 @@ class ProductsFragment : Fragment() {
     private fun setUpRecyclerView(){
         recyclerView?.layoutManager = GridLayoutManager(context, 2)
         recyclerView?.adapter = productRecyclerAdapter
+        productRecyclerAdapter.setOnItemClickListener { product: Product ->
+            val bundle = Bundle()
+            bundle.putSerializable("product", product)
+            findNavController().navigate(R.id.action_productsFragment_to_productDetailFragment, bundle)
+        }
     }
     private fun observeOnProducts(){
         productsViewModel.productsLiveData.observe(viewLifecycleOwner) {responseData->
