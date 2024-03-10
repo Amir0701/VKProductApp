@@ -6,7 +6,7 @@ import com.example.vkproductapp.domain.repository.ProductRepository
 import retrofit2.Response
 
 class ProductRepositoryImpl(private val productService: ProductService): ProductRepository {
-    override suspend fun getProducts(): Response<ResponseData> {
-        return productService.getProducts()
+    override suspend fun getProducts(skip: Int): Response<ResponseData> {
+        return productService.getProducts(skip)
     }
 }

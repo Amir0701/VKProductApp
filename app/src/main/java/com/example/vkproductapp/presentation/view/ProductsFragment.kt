@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnScrollChangeListener
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.lifecycle.Observer
@@ -55,6 +56,22 @@ class ProductsFragment : Fragment() {
             bundle.putSerializable("product", product)
             findNavController().navigate(R.id.action_productsFragment_to_productDetailFragment, bundle)
         }
+
+
+        recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val gridLayoutManager = recyclerView.layoutManager as GridLayoutManager
+                val totalItems = gridLayoutManager.itemCount
+                val visibleItems = gridLayoutManager.childCount
+                val firstVisibleItemPosition = gridLayoutManager.findFirstVisibleItemPosition()
+                if(productsViewModel.productsLiveData.value !is Result.Loading){
+                   if((visibleItems + firstVisibleItemPosition) >= totalItems){
+                       productsViewModel.getProducts()
+                   }
+                }
+            }
+        })
     }
     private fun observeOnProducts(){
         productsViewModel.productsLiveData.observe(viewLifecycleOwner) {responseResult->
@@ -71,7 +88,7 @@ class ProductsFragment : Fragment() {
                 is Result.Success ->{
                     progressBar?.visibility = View.GONE
                     responseResult.data?.let {data->
-                        productRecyclerAdapter.products = data.products
+                        productRecyclerAdapter.products.addAll(data.products)
                         productRecyclerAdapter.notifyDataSetChanged()
                     }
                 }

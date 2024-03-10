@@ -12,7 +12,7 @@ import com.example.vkproductapp.data.model.Product
 import com.google.android.material.card.MaterialCardView
 
 class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.ProductViewHolder>() {
-    var products: List<Product> = emptyList()
+    var products = mutableListOf<Product>()
 
     class ProductViewHolder(private val itemView: View): RecyclerView.ViewHolder(itemView){
         private val productImageView: ImageView = itemView.findViewById(R.id.cardProductImage)
