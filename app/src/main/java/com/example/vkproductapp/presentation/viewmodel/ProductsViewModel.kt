@@ -44,4 +44,25 @@ class ProductsViewModel(
 
         return Result.Error(response.message())
     }
+
+    fun searchProduct(query: String) = viewModelScope.launch(Dispatchers.IO){
+        if(internetConnection.hasInternetConnection()){
+            _productsLiveData.postValue(Result.Loading())
+            val response = productRepository.searchProduct(query)
+            val state = processSearchResponse(response)
+            _productsLiveData.postValue(state)
+        }else{
+            _productsLiveData.postValue(Result.NoInternetConnection())
+        }
+    }
+
+    private fun processSearchResponse(response: Response<ResponseData>): Result<ResponseData>{
+        if(response.isSuccessful){
+            response.body()?.let { data->
+                return Result.Success(data)
+            }
+        }
+
+        return Result.Error(response.message())
+    }
 }

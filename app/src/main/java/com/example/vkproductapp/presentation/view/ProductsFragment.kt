@@ -5,10 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.View.OnScrollChangeListener
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.core.view.MenuProvider
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -19,14 +23,16 @@ import com.example.vkproductapp.data.model.Product
 import com.example.vkproductapp.presentation.common.Result
 import com.example.vkproductapp.presentation.viewmodel.ProductsViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Job
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class ProductsFragment : Fragment() {
+class ProductsFragment : Fragment(), MenuProvider {
     private val productsViewModel by viewModel<ProductsViewModel>()
     private var recyclerView: RecyclerView? = null
     private val productRecyclerAdapter = ProductRecyclerAdapter()
     private var progressBar: ProgressBar? = null
+    private var searchJob: Job? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,6 +49,22 @@ class ProductsFragment : Fragment() {
         productsViewModel.getProducts()
     }
 
+    override fun onStart() {
+        super.onStart()
+        val actionBar = (activity as MainActivity).supportActionBar
+        actionBar?.title = "Products"
+        requireActivity().addMenuProvider(this)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        requireActivity().removeMenuProvider(this)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        searchJob?.cancel()
+    }
     private fun initViews(view: View){
         recyclerView = view.findViewById(R.id.productsRecyclerView)
         progressBar = view.findViewById(R.id.productProgressBar)
@@ -65,7 +87,7 @@ class ProductsFragment : Fragment() {
                 val totalItems = gridLayoutManager.itemCount
                 val visibleItems = gridLayoutManager.childCount
                 val firstVisibleItemPosition = gridLayoutManager.findFirstVisibleItemPosition()
-                if(productsViewModel.productsLiveData.value !is Result.Loading){
+                if(productsViewModel.productsLiveData.value !is Result.Loading && searchJob?.isCompleted == false){
                    if((visibleItems + firstVisibleItemPosition) >= totalItems){
                        productsViewModel.getProducts()
                    }
@@ -88,7 +110,11 @@ class ProductsFragment : Fragment() {
                 is Result.Success ->{
                     progressBar?.visibility = View.GONE
                     responseResult.data?.let {data->
-                        productRecyclerAdapter.setData(data.products)
+                        if(searchJob?.isCompleted == true){
+                            productRecyclerAdapter.setData(data.products)
+                        }else{
+                            productRecyclerAdapter.appendData(data.products)
+                        }
                     }
                 }
 
@@ -102,5 +128,33 @@ class ProductsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        if(menuItem.itemId == R.id.search){
+            val searchView = menuItem.actionView as androidx.appcompat.widget.SearchView?
+
+            searchView?.setOnQueryTextListener(object: androidx.appcompat.widget.SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(p0: String?): Boolean {
+                    searchJob?.cancel()
+                    p0?.let {query ->
+                        if(query.isNotEmpty()){
+                            searchJob = productsViewModel.searchProduct(query)
+                            return true
+                        }
+                    }
+                    return false
+                }
+
+                override fun onQueryTextChange(p0: String?): Boolean {
+                    return false
+                }
+            })
+        }
+
+        return false
     }
 }

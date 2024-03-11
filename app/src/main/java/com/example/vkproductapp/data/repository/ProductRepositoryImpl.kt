@@ -9,4 +9,8 @@ class ProductRepositoryImpl(private val productService: ProductService): Product
     override suspend fun getProducts(skip: Int): Response<ResponseData> {
         return productService.getProducts(skip)
     }
+
+    override suspend fun searchProduct(query: String): Response<ResponseData> {
+        return productService.searchProduct(query)
+    }
 }

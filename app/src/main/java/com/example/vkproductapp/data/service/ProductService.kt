@@ -9,4 +9,6 @@ interface ProductService {
     @GET("/products")
     suspend fun getProducts(@Query("skip") skip: Int, @Query("limit") limit:Int = 20): Response<ResponseData>
 
+    @GET("/products/search")
+    suspend fun searchProduct(@Query("q") query: String): Response<ResponseData>
 }

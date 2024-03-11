@@ -66,6 +66,10 @@ class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.Produc
     }
 
     fun setData(data: List<Product>){
+        listDiffer.submitList(data)
+    }
+
+    fun appendData(data: List<Product>){
         val currentList = listDiffer.currentList.toMutableList()
         currentList.addAll(data)
         listDiffer.submitList(currentList)

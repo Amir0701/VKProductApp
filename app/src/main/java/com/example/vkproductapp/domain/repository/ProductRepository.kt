@@ -5,4 +5,7 @@ import retrofit2.Response
 
 interface ProductRepository {
     suspend fun getProducts(skip: Int): Response<ResponseData>
+
+    suspend fun searchProduct(query: String): Response<ResponseData>
+
 }
