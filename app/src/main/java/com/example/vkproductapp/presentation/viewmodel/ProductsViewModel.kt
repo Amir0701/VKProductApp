@@ -11,6 +11,7 @@ import com.example.vkproductapp.util.InternetConnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.util.concurrent.locks.Lock
 
 class ProductsViewModel(
     private val productRepository: ProductRepository,
@@ -21,11 +22,23 @@ class ProductsViewModel(
     private var currentPage = 0
     var currentTotal: Int = 0
 
+    init {
+        getProducts()
+    }
+
     fun getProducts() = viewModelScope.launch(Dispatchers.IO) {
         if(internetConnection.hasInternetConnection()){
             _productsLiveData.postValue(Result.Loading())
             val response = productRepository.getProducts(currentPage * limit)
             val responseResult = processResponse(response)
+            if(responseResult is Result.Success){
+                if(responseResult.data?.products?.isNotEmpty() == true){
+                    synchronized(Any()){
+                        currentPage++
+                    }
+                }
+                currentTotal += responseResult.data?.products?.size ?: 0
+            }
             _productsLiveData.postValue(responseResult)
         }
         else{
@@ -33,30 +46,18 @@ class ProductsViewModel(
         }
     }
 
-    private fun processResponse(response: Response<ResponseData>): Result<ResponseData> {
-        if(response.isSuccessful){
-            response.body()?.let { data->
-                currentPage++
-                currentTotal += data.limit.toInt()
-                return Result.Success(data)
-            }
-        }
-
-        return Result.Error(response.message())
-    }
-
     fun searchProduct(query: String) = viewModelScope.launch(Dispatchers.IO){
         if(internetConnection.hasInternetConnection()){
             _productsLiveData.postValue(Result.Loading())
             val response = productRepository.searchProduct(query)
-            val state = processSearchResponse(response)
+            val state = processResponse(response)
             _productsLiveData.postValue(state)
         }else{
             _productsLiveData.postValue(Result.NoInternetConnection())
         }
     }
 
-    private fun processSearchResponse(response: Response<ResponseData>): Result<ResponseData>{
+    private fun processResponse(response: Response<ResponseData>): Result<ResponseData> {
         if(response.isSuccessful){
             response.body()?.let { data->
                 return Result.Success(data)

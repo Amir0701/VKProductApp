@@ -46,7 +46,6 @@ class ProductsFragment : Fragment(), MenuProvider {
         initViews(view)
         setUpRecyclerView()
         observeOnProducts()
-        productsViewModel.getProducts()
     }
 
     override fun onStart() {
@@ -87,7 +86,8 @@ class ProductsFragment : Fragment(), MenuProvider {
                 val totalItems = gridLayoutManager.itemCount
                 val visibleItems = gridLayoutManager.childCount
                 val firstVisibleItemPosition = gridLayoutManager.findFirstVisibleItemPosition()
-                if(productsViewModel.productsLiveData.value !is Result.Loading && (searchJob?.isCompleted == false || searchJob == null)){
+                if(productsViewModel.productsLiveData.value !is Result.Loading &&
+                    (searchJob?.isCompleted == false || searchJob == null)){
                    if((visibleItems + firstVisibleItemPosition) >= totalItems){
                        productsViewModel.getProducts()
                    }
