@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.vkproductapp.R
@@ -12,7 +14,6 @@ import com.example.vkproductapp.data.model.Product
 import com.google.android.material.card.MaterialCardView
 
 class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.ProductViewHolder>() {
-    var products = mutableListOf<Product>()
 
     class ProductViewHolder(private val itemView: View): RecyclerView.ViewHolder(itemView){
         private val productImageView: ImageView = itemView.findViewById(R.id.cardProductImage)
@@ -28,6 +29,18 @@ class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.Produc
         }
     }
 
+    private val diffUtil: DiffUtil.ItemCallback<Product> = object: DiffUtil.ItemCallback<Product>(){
+        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    private val listDiffer = AsyncListDiffer(this, diffUtil)
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.product_recycler_item, parent, false)
@@ -35,11 +48,11 @@ class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.Produc
     }
 
     override fun getItemCount(): Int {
-        return products.size
+        return listDiffer.currentList.size
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val currentProduct = products[position]
+        val currentProduct = listDiffer.currentList[position]
         holder.bind(currentProduct)
         holder.productCard.setOnClickListener {
             onItemClickListener?.invoke(currentProduct)
@@ -50,5 +63,11 @@ class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.Produc
 
     fun setOnItemClickListener(clickListener: ((Product) -> Unit)){
         onItemClickListener = clickListener
+    }
+
+    fun setData(data: List<Product>){
+        val currentList = listDiffer.currentList.toMutableList()
+        currentList.addAll(data)
+        listDiffer.submitList(currentList)
     }
 }

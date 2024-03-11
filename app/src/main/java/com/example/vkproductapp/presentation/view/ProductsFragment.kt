@@ -88,8 +88,7 @@ class ProductsFragment : Fragment() {
                 is Result.Success ->{
                     progressBar?.visibility = View.GONE
                     responseResult.data?.let {data->
-                        productRecyclerAdapter.products.addAll(data.products)
-                        productRecyclerAdapter.notifyDataSetChanged()
+                        productRecyclerAdapter.setData(data.products)
                     }
                 }
 
