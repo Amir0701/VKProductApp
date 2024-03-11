@@ -20,7 +20,8 @@ class ProductsViewModel(
     val productsLiveData: LiveData<Result<ResponseData>> = _productsLiveData
     private val limit = 20
     private var currentPage = 0
-    var currentTotal: Int = 0
+    var currentTotal: Long = 0
+    private var isLoadedAllData = false
 
     init {
         getProducts()
@@ -28,18 +29,22 @@ class ProductsViewModel(
 
     fun getProducts() = viewModelScope.launch(Dispatchers.IO) {
         if(internetConnection.hasInternetConnection()){
-            _productsLiveData.postValue(Result.Loading())
-            val response = productRepository.getProducts(currentPage * limit)
-            val responseResult = processResponse(response)
-            if(responseResult is Result.Success){
-                if(responseResult.data?.products?.isNotEmpty() == true){
-                    synchronized(Any()){
+            if(!isLoadedAllData){
+                _productsLiveData.postValue(Result.Loading())
+                val response = productRepository.getProducts(currentPage * limit)
+                val responseResult = processResponse(response)
+                if(responseResult is Result.Success){
+                    if(responseResult.data?.products?.isNotEmpty() == true){
                         currentPage++
                     }
+                    currentTotal += responseResult.data?.products?.size ?: 0
+                    responseResult.data?.let {
+                        if(currentTotal >= it.total)
+                            isLoadedAllData = true
+                    }
                 }
-                currentTotal += responseResult.data?.products?.size ?: 0
+                _productsLiveData.postValue(responseResult)
             }
-            _productsLiveData.postValue(responseResult)
         }
         else{
             _productsLiveData.postValue(Result.NoInternetConnection())

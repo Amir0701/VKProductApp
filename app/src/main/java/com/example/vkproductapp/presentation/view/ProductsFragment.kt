@@ -33,6 +33,8 @@ class ProductsFragment : Fragment(), MenuProvider {
     private val productRecyclerAdapter = ProductRecyclerAdapter()
     private var progressBar: ProgressBar? = null
     private var searchJob: Job? = null
+    private var isLoading = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -86,9 +88,10 @@ class ProductsFragment : Fragment(), MenuProvider {
                 val totalItems = gridLayoutManager.itemCount
                 val visibleItems = gridLayoutManager.childCount
                 val firstVisibleItemPosition = gridLayoutManager.findFirstVisibleItemPosition()
-                if(productsViewModel.productsLiveData.value !is Result.Loading &&
-                    (searchJob?.isCompleted == false || searchJob == null)){
-                   if((visibleItems + firstVisibleItemPosition) >= totalItems){
+                val totalItemsWhenLoadData = totalItems * 75 / 100
+                if(!isLoading && (searchJob?.isCompleted == false || searchJob == null)){
+                   if((visibleItems + firstVisibleItemPosition) >= totalItemsWhenLoadData){
+                       isLoading = true
                        productsViewModel.getProducts()
                    }
                 }
@@ -103,6 +106,7 @@ class ProductsFragment : Fragment(), MenuProvider {
                 }
 
                 is Result.NoInternetConnection ->{
+                    isLoading = false
                     progressBar?.visibility = View.GONE
                     Snackbar.make(requireView(), "No Internet connection", Snackbar.LENGTH_LONG).show()
                 }
@@ -116,9 +120,11 @@ class ProductsFragment : Fragment(), MenuProvider {
                             productRecyclerAdapter.appendData(data.products)
                         }
                     }
+                    isLoading = false
                 }
 
                 is Result.Error ->{
+                    isLoading = false
                     progressBar?.visibility = View.GONE
                     AlertDialog.Builder(requireContext())
                         .setTitle("Error")
@@ -128,6 +134,7 @@ class ProductsFragment : Fragment(), MenuProvider {
                 }
             }
         }
+
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
