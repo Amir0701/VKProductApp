@@ -87,7 +87,7 @@ class ProductsFragment : Fragment(), MenuProvider {
                 val totalItems = gridLayoutManager.itemCount
                 val visibleItems = gridLayoutManager.childCount
                 val firstVisibleItemPosition = gridLayoutManager.findFirstVisibleItemPosition()
-                if(productsViewModel.productsLiveData.value !is Result.Loading && searchJob?.isCompleted == false){
+                if(productsViewModel.productsLiveData.value !is Result.Loading && (searchJob?.isCompleted == false || searchJob == null)){
                    if((visibleItems + firstVisibleItemPosition) >= totalItems){
                        productsViewModel.getProducts()
                    }
