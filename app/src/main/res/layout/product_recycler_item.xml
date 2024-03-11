@@ -18,7 +18,7 @@
         <ImageView
             android:id="@+id/cardProductImage"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="180dp"
             android:scaleType="centerCrop"/>
 
         <TextView
@@ -29,7 +29,17 @@
             android:layout_marginTop="5dp"
             android:layout_marginStart="5dp"
             android:textColor="@color/black"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/cardProductPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/cardProductDescription"
@@ -37,7 +47,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginStart="5dp"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:textColor="@color/black"/>
+
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

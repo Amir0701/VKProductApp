@@ -19,6 +19,7 @@ class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.Produc
         private val productImageView: ImageView = itemView.findViewById(R.id.cardProductImage)
         private val productTitle: TextView = itemView.findViewById(R.id.cardProductTitle)
         private val productDescription: TextView = itemView.findViewById(R.id.cardProductDescription)
+        private val productPrice: TextView = itemView.findViewById(R.id.cardProductPrice)
         val productCard: MaterialCardView = itemView.findViewById(R.id.cardProduct)
         fun bind(product: Product){
             Glide.with(productImageView)
@@ -26,6 +27,7 @@ class ProductRecyclerAdapter: RecyclerView.Adapter<ProductRecyclerAdapter.Produc
                 .into(productImageView)
             productTitle.text = product.title
             productDescription.text = product.description
+            productPrice.text = "${product.price} $"
         }
     }
 
