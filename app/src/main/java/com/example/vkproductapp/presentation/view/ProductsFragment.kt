@@ -55,7 +55,7 @@ class ProductsFragment : Fragment(), MenuProvider {
     override fun onStart() {
         super.onStart()
         val actionBar = (activity as MainActivity).supportActionBar
-        actionBar?.title = "Products"
+        actionBar?.title = requireContext().resources.getString(R.string.product_fragment_action_bar_title)
         requireActivity().addMenuProvider(this)
     }
 
@@ -111,7 +111,7 @@ class ProductsFragment : Fragment(), MenuProvider {
                 is Result.NoInternetConnection ->{
                     isLoading = false
                     progressBar?.visibility = View.GONE
-                    Snackbar.make(requireView(), "No Internet connection", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(requireView(), R.string.no_internet_connection_title, Snackbar.LENGTH_LONG).show()
                 }
 
                 is Result.Success ->{

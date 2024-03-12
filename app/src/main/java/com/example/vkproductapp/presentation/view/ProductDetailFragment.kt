@@ -46,7 +46,7 @@ class ProductDetailFragment : Fragment(), MenuProvider {
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.setHomeButtonEnabled(true)
         requireActivity().addMenuProvider(this)
-        actionBar?.title = "Detail information"
+        actionBar?.title = requireActivity().resources.getString(R.string.detiail_product_fragment_action_bar_title)
     }
 
     override fun onDestroyView() {
