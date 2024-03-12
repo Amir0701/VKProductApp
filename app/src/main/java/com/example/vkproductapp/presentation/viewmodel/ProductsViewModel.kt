@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vkproductapp.data.model.Category
 import com.example.vkproductapp.data.model.Product
 import com.example.vkproductapp.data.model.ResponseData
 import com.example.vkproductapp.domain.repository.CategoryRepository
@@ -31,10 +30,8 @@ class ProductsViewModel(
     private var isLoadedAllData = false
 
     init {
-        getProducts()
         getAllCategories()
     }
-
     fun getProducts() = viewModelScope.launch(Dispatchers.IO) {
         if(internetConnection.hasInternetConnection()){
             if(!isLoadedAllData){
@@ -66,7 +63,6 @@ class ProductsViewModel(
             _productsLiveData.postValue(Result.NoInternetConnection())
         }
     }
-
     fun searchProduct(query: String) = viewModelScope.launch(Dispatchers.IO){
         if(internetConnection.hasInternetConnection()){
             try {
@@ -130,6 +126,10 @@ class ProductsViewModel(
     }
 
     fun getSavedProducts() = viewModelScope.launch(Dispatchers.IO) {
-        _productsLiveData.postValue(Result.Success(productRepository.getSavedProducts()))
+        val savedProducts = productRepository.getSavedProducts()
+        if(savedProducts.isNotEmpty())
+            _productsLiveData.postValue(Result.Success(productRepository.getSavedProducts()))
+        else
+            getProducts()
     }
 }

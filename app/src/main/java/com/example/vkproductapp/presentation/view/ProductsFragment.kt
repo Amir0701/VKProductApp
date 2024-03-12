@@ -9,18 +9,13 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.View.OnScrollChangeListener
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.ProgressBar
 import androidx.core.view.MenuProvider
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vkproductapp.R
-import com.example.vkproductapp.data.model.Category
 import com.example.vkproductapp.data.model.Product
 import com.example.vkproductapp.presentation.common.Result
 import com.example.vkproductapp.presentation.viewmodel.ProductsViewModel
@@ -44,6 +39,7 @@ class ProductsFragment : Fragment(), MenuProvider {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        productsViewModel.getSavedProducts()
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_products, container, false)
     }
