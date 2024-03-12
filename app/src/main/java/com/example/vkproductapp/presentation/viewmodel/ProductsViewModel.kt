@@ -10,7 +10,7 @@ import com.example.vkproductapp.data.model.ResponseData
 import com.example.vkproductapp.domain.repository.CategoryRepository
 import com.example.vkproductapp.domain.repository.ProductRepository
 import com.example.vkproductapp.presentation.common.Result
-import com.example.vkproductapp.util.InternetConnection
+import com.example.vkproductapp.util.InternetConnectionChecker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -18,7 +18,7 @@ import retrofit2.Response
 class ProductsViewModel(
     private val productRepository: ProductRepository,
     private val categoryRepository: CategoryRepository,
-    private val internetConnection: InternetConnection): ViewModel() {
+    private val internetConnection: InternetConnectionChecker): ViewModel() {
     private val _productsLiveData = MutableLiveData<Result<List<Product>>>()
     val productsLiveData: LiveData<Result<List<Product>>> = _productsLiveData
     private val _categoriesLiveData = MutableLiveData<Result<List<String>>>()

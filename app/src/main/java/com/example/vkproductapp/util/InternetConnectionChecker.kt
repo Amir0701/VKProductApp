@@ -3,9 +3,8 @@ package com.example.vkproductapp.util
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 
-class InternetConnection(private val context: Context) {
+class InternetConnectionChecker(private val context: Context) {
     fun hasInternetConnection(): Boolean{
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetwork ?: return false
