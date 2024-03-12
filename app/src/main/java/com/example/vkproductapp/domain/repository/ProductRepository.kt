@@ -1,5 +1,6 @@
 package com.example.vkproductapp.domain.repository
 
+import com.example.vkproductapp.data.model.Category
 import com.example.vkproductapp.data.model.Product
 import com.example.vkproductapp.data.model.ResponseData
 import retrofit2.Response
@@ -12,4 +13,6 @@ interface ProductRepository {
     suspend fun addToProducts(products: List<Product>)
 
     suspend fun getSavedProducts(): List<Product>
+
+    suspend fun getProductsByCategory(category: String): Response<ResponseData>
 }

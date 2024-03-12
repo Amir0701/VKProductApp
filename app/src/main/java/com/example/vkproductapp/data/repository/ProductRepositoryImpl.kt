@@ -26,4 +26,8 @@ class ProductRepositoryImpl(private val productService: ProductService): Product
     override suspend fun getSavedProducts(): List<Product> {
         return products
     }
+
+    override suspend fun getProductsByCategory(category: String): Response<ResponseData> {
+        return productService.getProductsByCategory(category)
+    }
 }
