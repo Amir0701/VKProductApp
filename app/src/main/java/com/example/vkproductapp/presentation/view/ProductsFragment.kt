@@ -114,11 +114,12 @@ class ProductsFragment : Fragment(), MenuProvider {
                 is Result.Success ->{
                     progressBar?.visibility = View.GONE
                     responseResult.data?.let {data->
-                        if(searchJob?.isCompleted == true){
-                            productRecyclerAdapter.setData(data.products)
-                        }else{
-                            productRecyclerAdapter.appendData(data.products)
-                        }
+                        productRecyclerAdapter.setData(data)
+//                        if(searchJob?.isCompleted == true){
+//                            productRecyclerAdapter.setData(data.products)
+//                        }else{
+//                            productRecyclerAdapter.appendData(data.products)
+//                        }
                     }
                     isLoading = false
                 }
