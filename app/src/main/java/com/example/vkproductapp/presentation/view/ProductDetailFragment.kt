@@ -3,17 +3,23 @@ package com.example.vkproductapp.presentation.view
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
 import com.example.vkproductapp.R
 
-class ProductDetailFragment : Fragment() {
+class ProductDetailFragment : Fragment(), MenuProvider {
     private val navArgs by navArgs<ProductDetailFragmentArgs>()
     private var imageSlider: ImageSlider? = null
     private var productTitleTextView: TextView? = null
@@ -21,6 +27,7 @@ class ProductDetailFragment : Fragment() {
     private var productBrandTextView: TextView? = null
     private var productCategoryTextView: TextView? = null
     private var productDescriptionTextView: TextView? = null
+    private var actionBar: ActionBar? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,6 +42,18 @@ class ProductDetailFragment : Fragment() {
         initViews(view)
         setImagesToSlider()
         setProductData()
+        actionBar = (activity as MainActivity).supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.setHomeButtonEnabled(true)
+        requireActivity().addMenuProvider(this)
+        actionBar?.title = "Detail information"
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        requireActivity().removeMenuProvider(this)
+        actionBar?.setHomeButtonEnabled(false)
+        actionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     private fun initViews(view: View){
@@ -64,5 +83,16 @@ class ProductDetailFragment : Fragment() {
         productCategoryTextView?.text = product.category
         productBrandTextView?.text = product.brand
         productDescriptionTextView?.text = product.description
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menu.clear()
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        if(menuItem.itemId == android.R.id.home){
+            return findNavController().navigateUp()
+        }
+        return false
     }
 }
